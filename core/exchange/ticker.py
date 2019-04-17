@@ -45,9 +45,6 @@ class TickerProducer(ExchangeProducer):
 
 
 class TickerConsumer(ExchangeConsumer):
-    SYMBOL = "SYMBOL"
-    TICKER = "TICKER"
-
     def __init__(self, exchange, ticker: TickerConsumerProducers):
         super().__init__(exchange)
         self.ticker: TickerConsumerProducers = ticker
@@ -55,7 +52,7 @@ class TickerConsumer(ExchangeConsumer):
     async def perform(self, symbol, ticker):
         try:
             if symbol in self.ticker.producers:  # and price_ticker_is_initialized
-                self.exchange.get_symbol_data_from_pair(symbol).update_symbol_price_ticker(ticker)
+                self.exchange.get_symbol_data(symbol).update_symbol_price_ticker(ticker)
                 await self.ticker.producers[symbol].receive()
         except CancelledError:
             self.logger.info("Update tasks cancelled.")
@@ -66,11 +63,6 @@ class TickerConsumer(ExchangeConsumer):
     async def consume(self):
         while not self.should_stop:
             data = await self.queue.get()
-            await self.perform(data[self.SYMBOL], data[self.TICKER])
+            await self.perform(data["pair"],
+                               data["ticker"])
 
-    @staticmethod
-    def create_feed(symbol, ticker):
-        return {
-            TickerConsumer.SYMBOL: symbol,
-            TickerConsumer.TICKER: ticker
-        }

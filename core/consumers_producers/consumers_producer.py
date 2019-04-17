@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 
-from typing import Dict
+from typing import Dict, ValuesView
 
 from core.consumers_producers.consumer import Consumer
 from core.consumers_producers.producers import Producer

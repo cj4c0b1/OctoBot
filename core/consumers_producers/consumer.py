@@ -30,26 +30,17 @@ class Consumer:
         self.consume_task = None
         self.should_stop = False
 
-    @abstractmethod
     async def consume(self):
         """
         Should implement self.queue.get() in a while loop
 
-        while not self.should_close:
+        while not self.should_stop:
             await self.queue.get()
 
         :return:
         """
-        raise NotImplementedError("consume not implemented")
-
-    @staticmethod
-    def create_feed(**kwargs):
-        """
-        Create the expected receive data structure
-        :param kwargs:
-        :return:
-        """
-        raise NotImplementedError("create_feed not implemented")
+        while not self.should_stop:
+            await self.perform(data=(await self.queue.get()))
 
     async def start(self):
         """
@@ -58,6 +49,7 @@ class Consumer:
         """
         pass
 
+    @abstractmethod
     async def perform(self, **kwargs):
         """
         Should implement consumer's non-triggered tasks

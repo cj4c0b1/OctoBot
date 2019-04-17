@@ -26,7 +26,3 @@ class BalanceConsumer(ExchangeConsumer):
 
     async def consume(self):
         pass
-
-    @staticmethod
-    def create_feed(**kwargs):
-        pass

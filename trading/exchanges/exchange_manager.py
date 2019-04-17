@@ -74,13 +74,13 @@ class ExchangeManager(Initializable):
         self.balance_consumer: BalanceConsumer = BalanceConsumer(self)
 
         # exchange data consumer_producers
-        self.ohlcv_consumer_producer: OHLCVConsumerProducers = OHLCVConsumerProducers(self)
-        self.order_book_consumer_producer: OrderBookConsumerProducers = OrderBookConsumerProducers(self)
-        self.ticker_consumer_producer: TickerConsumerProducers = TickerConsumerProducers(self)
-        self.recent_trade_consumer_producer: RecentTradeConsumerProducers = RecentTradeConsumerProducers(self)
+        self.ohlcv_consumer_producers: OHLCVConsumerProducers = OHLCVConsumerProducers(self)
+        self.order_book_consumer_producers: OrderBookConsumerProducers = OrderBookConsumerProducers(self)
+        self.ticker_consumer_producers: TickerConsumerProducers = TickerConsumerProducers(self)
+        self.recent_trade_consumer_producers: RecentTradeConsumerProducers = RecentTradeConsumerProducers(self)
 
         # exchange data producer
-        self.orders_updater_producer: OrderUpdater = OrderUpdater(self, self.recent_trade_consumer_producer.producers)
+        self.orders_updater_producer: OrderUpdater = OrderUpdater(self, self.recent_trade_consumer_producers.producers)
         self.orders_updater_producer.producer.add_consumer(self.orders_consumer)
         self.ohlcv_updater_producer: OHLCVUpdater = OHLCVUpdater(self)
 
@@ -93,10 +93,10 @@ class ExchangeManager(Initializable):
         await self.balance_consumer.run()
 
         # exchange data consumer_producers
-        await self.ohlcv_consumer_producer.run()
-        await self.order_book_consumer_producer.run()
-        await self.ticker_consumer_producer.run()
-        await self.recent_trade_consumer_producer.run()
+        await self.ohlcv_consumer_producers.run()
+        await self.order_book_consumer_producers.run()
+        await self.ticker_consumer_producers.run()
+        await self.recent_trade_consumer_producers.run()
 
         # exchange data producer
         await self.ohlcv_updater_producer.run()

@@ -48,10 +48,6 @@ class OHLCVProducer(ExchangeProducer):
 
 
 class OHLCVConsumer(ExchangeConsumer):
-    TIME_FRAME = "TIME_FRAME"
-    SYMBOL = "SYMBOL"
-    OHLCV = "OHLCV"
-
     def __init__(self, exchange, ohlcv: OHLCVConsumerProducers):
         super().__init__(exchange)
         self.ohlcv = ohlcv
@@ -60,7 +56,7 @@ class OHLCVConsumer(ExchangeConsumer):
         try:
             if symbol in self.ohlcv.producers and time_frame in self.ohlcv.producers[symbol]:
                 self.exchange.uniformize_candles_if_necessary(candle)
-                self.exchange.get_symbol_data_from_pair(symbol).update_symbol_candles(time_frame,
+                self.exchange.get_symbol_data(symbol).update_symbol_candles(time_frame,
                                                                                       candle,
                                                                                       replace_all=False)
                 await self.ohlcv.producers[symbol][time_frame].receive()
@@ -73,12 +69,6 @@ class OHLCVConsumer(ExchangeConsumer):
     async def consume(self):
         while not self.should_stop:
             data = await self.queue.get()
-            await self.perform(data[self.TIME_FRAME], data[self.SYMBOL], data[self.OHLCV])
-
-    @staticmethod
-    def create_feed(time_frame, symbol, candle):
-        return {
-            OHLCVConsumer.TIME_FRAME: time_frame,
-            OHLCVConsumer.SYMBOL: symbol,
-            OHLCVConsumer.OHLCV: candle
-        }
+            await self.perform(data["pair"],
+                               data["time_frame"],
+                               data["candle"])

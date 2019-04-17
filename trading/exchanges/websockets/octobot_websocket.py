@@ -83,7 +83,7 @@ class OctoBotWebSocketClient(AbstractWebSocket):
     def add_recent_trade_feed(self):
         if self._is_feed_available(TRADES):
             recent_trade_callback = RecentTradesCallBack(self,
-                                                         self.exchange_manager.recent_trade_consumer_producer.consumer)
+                                                         self.exchange_manager.recent_trade_consumer_producers.consumer)
             self._add_feed_and_run_if_required(TRADES, TradeCallback(recent_trade_callback.recent_trades_callback))
             self.is_handling_recent_trades = True
         else:
@@ -92,7 +92,7 @@ class OctoBotWebSocketClient(AbstractWebSocket):
 
     def add_order_book_feed(self):
         if self._is_feed_available(L2_BOOK):
-            order_book_callback = OrderBookCallBack(self, self.exchange_manager.order_book_consumer_producer.consumer)
+            order_book_callback = OrderBookCallBack(self, self.exchange_manager.order_book_consumer_producers.consumer)
             self._add_feed_and_run_if_required(L2_BOOK, BookCallback(order_book_callback.l2_order_book_callback))
             self.is_handling_order_book = True
         else:
@@ -101,7 +101,7 @@ class OctoBotWebSocketClient(AbstractWebSocket):
 
     def add_tickers_feed(self):
         if self._is_feed_available(TICKER):
-            tickers_callback = TickersCallBack(self, self.exchange_manager.ticker_consumer_producer.consumer)
+            tickers_callback = TickersCallBack(self, self.exchange_manager.ticker_consumer_producers.consumer)
             self._add_feed_and_run_if_required(TICKER, TickerCallback(tickers_callback.tickers_callback))
             self.is_handling_price_ticker = True
         else:
@@ -246,14 +246,14 @@ class OctoBotWebSocketClient(AbstractWebSocket):
             'amount': amount
         }
 
-    def convert_into_ccxt_ohlcv(self, data, symbol):
+    def convert_into_ccxt_ohlcv(self, data):
         return [
-            data[symbol]["timestamp"],
-            AbstractWebSocket.safe_float(data[symbol], "open"),
-            AbstractWebSocket.safe_float(data[symbol], "high"),
-            AbstractWebSocket.safe_float(data[symbol], "low"),
-            AbstractWebSocket.safe_float(data[symbol], "close"),
-            AbstractWebSocket.safe_float(data[symbol], "volume"),
+            data["timestamp"],
+            AbstractWebSocket.safe_float(data, "open"),
+            AbstractWebSocket.safe_float(data, "high"),
+            AbstractWebSocket.safe_float(data, "low"),
+            AbstractWebSocket.safe_float(data, "close"),
+            AbstractWebSocket.safe_float(data, "volume"),
         ]
 
     def convert_into_ccxt_order(self, order):

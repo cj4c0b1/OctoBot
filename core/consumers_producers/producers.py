@@ -39,7 +39,7 @@ class Producer:
         :return:
         """
         for consumer in self.consumer_queues:
-            await consumer.queue.put(**kwargs)
+            await consumer.queue.put(kwargs)
 
     async def receive(self, **kwargs):
         """

@@ -45,9 +45,6 @@ class OrderBookProducer(ExchangeProducer):
 
 
 class OrderBookConsumer(ExchangeConsumer):
-    SYMBOL = "SYMBOL"
-    ORDER_BOOK = "ORDER_BOOK"
-
     def __init__(self, exchange, order_book: OrderBookConsumerProducers):
         super().__init__(exchange)
         self.order_book: OrderBookConsumerProducers = order_book
@@ -55,7 +52,7 @@ class OrderBookConsumer(ExchangeConsumer):
     async def perform(self, symbol, order_book):
         try:
             if symbol in self.order_book.producers:  # and symbol_data.order_book_is_initialized()
-                self.exchange.get_symbol_data_from_pair(symbol).update_order_book(order_book)
+                self.exchange.get_symbol_data(symbol).update_order_book(order_book)
                 await self.order_book.producers[symbol].receive()
         except CancelledError:
             self.logger.info("Update tasks cancelled.")
@@ -66,11 +63,6 @@ class OrderBookConsumer(ExchangeConsumer):
     async def consume(self):
         while not self.should_stop:
             data = await self.queue.get()
-            await self.perform(data[self.SYMBOL], data[self.ORDER_BOOK])
+            await self.perform(data["pair"],
+                               data["order_book"])
 
-    @staticmethod
-    def create_feed(symbol, order_book):
-        return {
-            OrderBookConsumer.SYMBOL: symbol,
-            OrderBookConsumer.ORDER_BOOK: order_book
-        }

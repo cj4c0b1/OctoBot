@@ -32,7 +32,7 @@ class OHLCVUpdaterProducer(ExchangeProducer):
     async def send(self, data):
         self.refreshed_times += 1
         self.last_update = time.time()
-        await super().send(data)
+        await super().send(data=data)
 
 
 class OHLCVUpdater(ExchangeProducer):
